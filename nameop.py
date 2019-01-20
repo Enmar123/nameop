@@ -39,7 +39,7 @@ class filename:
         return #'TODO'
     
     def __repr__(self):
-        return '/'.join([self.get_dir(), self.get_name()])
+        return repr(self.path)
     
     def _driver(self, filepath):
         # <TODO>
@@ -53,10 +53,10 @@ class filename:
                 self.dir = filepath_parts[0:-1]
                 
             filename_parts = filepath_parts[-1].split('.')
-            print(filename_parts)
             if len(filepath_parts) >= 2:
                 self.desc = filename_parts[0:-1]
                 self.ext = [filename_parts[-1]]
+            self._update()
         else:
             raise ValueError('Input is not string')
             
@@ -68,6 +68,7 @@ class filename:
             self.op = [string]
         else:
             self.op.append(string)
+        self._update()
     
     def add_post(self, string):
         """
@@ -77,10 +78,13 @@ class filename:
             self.post_op = [string]
         else:
             self.post_op.append()
+        self._update()
             
     def get_dir(self):
         if self.op is not None:
             return '/'.join(self.dir)
+        else:
+            return None
     
     def get_name(self):
         constructor = [self.get_preop(), self.get_desc(), 
@@ -92,7 +96,6 @@ class filename:
         filename = '_'.join(filename_parts)
         if self.get_ext() is not None:
             filename = filename + '.' + self.get_ext()
-        
         return filename
                 
     def get_preop(self):
@@ -128,11 +131,17 @@ class filename:
         
             
     def _update(self):
-        #<TODO>
-        #Change the setup of this object to transform lists into
-        #strings
-        pass
-    
+        self.name = self.get_name()
+        filepath_parts = [self.get_dir(), self.get_name()]
+        filepath = []
+        for part in filepath_parts:
+            if part is not None:
+                filepath.append(part)
+        if len(filepath) == 0:
+            return
+        else:
+            self.path = '/'.join(filepath)
+                
     
         
         
