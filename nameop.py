@@ -5,14 +5,14 @@ Created on Fri Jan 18 19:15:39 2019
 @author: Jason
 """
 
-class nameop:
+class filename:
     """
     This class serves as a container. Use it to store operation descriptors
     and build your file name. 
     
     Variables:
         self.dir     = directory
-        self.name    = original file descriptor
+        self.desc    = original file descriptor
         self.pre_op  = pre operations
         self.op      = operations
         self.post_op = post operations
@@ -24,11 +24,14 @@ class nameop:
     
     def __init__(self, filepath=None):
         self.dir = None
-        self.name = None
         self.pre_op = None
+        self.desc = None
         self.op = None
         self.post_op = None
         self.ext = None
+        
+        self.path = None
+        self.name = None
         
         self._driver(filepath)
         
@@ -36,20 +39,7 @@ class nameop:
         return #'TODO'
     
     def __repr__(self):
-        if self.name is None:
-            self.name = repr(None)
-        filename =  self.name
-        if self.dir is not None:
-            filename = '/'.join([self.dir, filename])
-        if self.pre_op is not None:
-            filename = '_'.join([filename, self.pre_op])
-        if self.op is not None:
-            filename = '_'.join([filename, self.op])
-        if self.post_op is not None:
-            filename = '_'.join([filename, self.post_op])
-        if self.ext is not None:
-            filename = '.'.join([filename, self.ext])
-        return filename
+        return '/'.join([self.get_dir(), self.get_name()])
     
     def _driver(self, filepath):
         # <TODO>
@@ -58,9 +48,15 @@ class nameop:
         if filepath is None:
             return
         elif isinstance(filepath, str):
-            self.dir = '/'.join(filepath.split('/')[0:-1])
-            self.name = filepath.split('/')[-1].split('.')[0]
-            self.ext = filepath.split('.')[-1]
+            filepath_parts = filepath.split('/')
+            if len(filepath_parts) >= 2:
+                self.dir = filepath_parts[0:-1]
+                
+            filename_parts = filepath_parts[-1].split('.')
+            print(filename_parts)
+            if len(filepath_parts) >= 2:
+                self.desc = filename_parts[0:-1]
+                self.ext = [filename_parts[-1]]
         else:
             raise ValueError('Input is not string')
             
@@ -69,19 +65,74 @@ class nameop:
         Add a standard operation in the form of a string to your filename.
         """
         if self.op is None:
-            self.op = string
+            self.op = [string]
         else:
-            ops = self.op.split('_')
-            ops.append(string)
-            '_'.join(ops)
+            self.op.append(string)
     
     def add_post(self, string):
         """
         Add a post operation in the form of a string to your filename.
         """
         if self.post_op is None:
-            self.post_op = string
+            self.post_op = [string]
         else:
-            ops = self.op.split('_')
-            ops.append(string)
-            '_'.join(ops)
+            self.post_op.append()
+            
+    def get_dir(self):
+        if self.op is not None:
+            return '/'.join(self.dir)
+    
+    def get_name(self):
+        constructor = [self.get_preop(), self.get_desc(), 
+                       self.get_op(), self.get_postop()]
+        filename_parts=[]    
+        for part in constructor:
+            if part is not None:
+                filename_parts.append(part)
+        filename = '_'.join(filename_parts)
+        if self.get_ext() is not None:
+            filename = filename + '.' + self.get_ext()
+        
+        return filename
+                
+    def get_preop(self):
+        if self.pre_op is not None:
+            return '_'.join(self.pre_op)
+        else:
+            return None
+    
+    def get_desc(self):
+        if self.desc is not None:
+            return '_'.join(self.desc)
+        else:
+            return None
+    
+    def get_op(self):
+        if self.op is not None:
+            return '_'.join(self.op)
+        else:
+            return None
+    
+    def get_postop(self):
+        if self.post_op is not None:
+            return '_'.join(self.post_op)
+        else:
+            return None
+    
+    def get_ext(self):
+        if self.ext is not None:
+            return '_'.join(self.ext)
+        else:
+            return None
+    
+        
+            
+    def _update(self):
+        #<TODO>
+        #Change the setup of this object to transform lists into
+        #strings
+        pass
+    
+    
+        
+        
