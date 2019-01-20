@@ -34,13 +34,16 @@ class filename:
         self.name = None
         
         self._driver(filepath)
+        self._update()
+        
         
     def __getitem__(self, item):
         return #'TODO'
     
     def __repr__(self):
-        return repr(self.path)
+        return 'filepath(' + repr(self.path) + ')'
     
+    # Controls how class input data is handeled
     def _driver(self, filepath):
         # <TODO>
         # add support for missing directory
@@ -56,7 +59,6 @@ class filename:
             if len(filepath_parts) >= 2:
                 self.desc = filename_parts[0:-1]
                 self.ext = [filename_parts[-1]]
-            self._update()
         else:
             raise ValueError('Input is not string')
             
@@ -77,11 +79,26 @@ class filename:
         if self.post_op is None:
             self.post_op = [string]
         else:
-            self.post_op.append()
+            self.post_op.append(string)
         self._update()
+        
+    def add_dir(self, string):
+        """
+        Add a sub directory to your filename.
+        """
+        if self.dir is None:
+            self.dir = [string]
+        else:
+            self.dir.append(string)
+        self._update()
+        
+    def rmv_dir(self):
+        self.dir.pop()
+        self._update
+        
             
     def get_dir(self):
-        if self.op is not None:
+        if self.dir is not None:
             return '/'.join(self.dir)
         else:
             return None
@@ -128,8 +145,7 @@ class filename:
         else:
             return None
     
-        
-            
+    # Updates self.name and self.path with proper strings
     def _update(self):
         self.name = self.get_name()
         filepath_parts = [self.get_dir(), self.get_name()]
@@ -140,8 +156,7 @@ class filename:
         if len(filepath) == 0:
             return
         else:
-            self.path = '/'.join(filepath)
-                
+            self.path = '/'.join(filepath)              
     
         
         
