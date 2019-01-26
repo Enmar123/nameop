@@ -36,34 +36,42 @@ class filename:
         self.path = None
         self.name = None
         
-        self._driver(filepath)
+        self._class_driver(filepath)
         self._update()
         
         
     def __getitem__(self, item):
-        return #'TODO'
+        return #'Do i need one?'
     
     def __repr__(self):
         return 'filepath(' + repr(self.path) + ')'
     
     # Controls how class input data is handeled
-    def _driver(self, filepath):
-        # <TODO>
-        # add support for missing directory
-        # add case for missing file extension
-        if filepath is None:
+    def _class_driver(self, data):
+        if data is None:
             return
-        elif isinstance(filepath, str):
-            filepath_parts = filepath.split('/')
-            if len(filepath_parts) >= 2:
-                self.dir = filepath_parts[0:-1]
-                
-            filename_parts = filepath_parts[-1].split('.')
-            if len(filepath_parts) >= 2:
-                self.desc = filename_parts[0:-1]
-                self.ext = [filename_parts[-1]]
+        elif isinstance(data, str):
+            fileparts = data.split('/')
+            if len(fileparts) > 1:
+                if isinstance(fileparts[0:-1], str):
+                    self.dir = [fileparts[0:-1]]
+                else:
+                    self.dir = fileparts[0:-1]
+            fileparts = fileparts[-1].split('.')
+            if len(fileparts) > 1:
+                self.desc = ['.'.join(fileparts[0:-1])]
+                self.ext  = [fileparts[-1]]
+            else:
+                self.desc = fileparts
         else:
-            raise ValueError('Input is not string')
+            raise TypeError('Expected input of type string')
+            
+    # unsure if a function driver is needed, meh.
+    def _fcn_driver(self, data):
+        if isinstance(data, str):
+            return data
+        else:
+            raise TypeError('Expected input of type string')
     
     # Updates self.name and self.path with proper strings
     def _update(self):
@@ -97,6 +105,7 @@ class filename:
         """
         Add a standard operation in the form of a string to your filename.
         """
+        self._fcn_driver(string)
         if self.op is None:
             self.op = [string]
         else:
@@ -118,20 +127,27 @@ class filename:
         Add a sub directory to your filename.
         """
         if self.dir is None:
-            self.dir = [string]
+            # Special case for the root directory
+            if string is '/':
+                self.dir = ['']
+            else:
+                self.dir = [string]
         else:
             self.dir.append(string)
         self._update()
         
     ###########################################################################
-    # --- RMV Functions --- #
+    # --- POP Functions --- #
     ###########################################################################
     
-    def rmv_dir(self):
+    def pop_dir(self):
         """
         Remove the latest folder from the file directory.
         """
         self.dir.pop()
+        # reset an empy self.dir to None
+        if len(self.dir) == 0:
+            self.dir = None
         self._update()
         
     ###########################################################################
